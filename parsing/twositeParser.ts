@@ -11,22 +11,8 @@ interface Data {
   description: string; //bu ham url bo'ladi faqat to'liqroq
   date: number; //bu qachon maqola chiqarilganligi haqida
 }
-const getData = async (num: number = 1) => {
-  const url = `https://cryptonews.net/?page=${num}`;
-  const data: string = await getUrl(url);
-  const $ = Cheerio.load(data);
-  const baseUrl: string = `https://cryptonews.net`;
-  let arr: object[] = [];
-  $(".row.news-item.start-xs").each((_, e) => {
-    let obj = {} as Data;
-    obj.title = String($(e).attr("data-title"));
-    obj.description = String(baseUrl + $(e).attr("data-id"));
-    obj.imageUrl = String($(e).attr("data-image"));
-    obj.date = await getTimeNews(obj.description);
-    arr.push(obj);
-  });
-};
-const getTimeNews: (url: string) => number = async (url) => {
+
+const getTimeNews: (url: string) => void = async (url) => {
   const data: string = await getUrl(url);
   let vaqt: number = 111111111111;
   const $ = Cheerio.load(data);
@@ -58,5 +44,31 @@ const getTimeNews: (url: string) => number = async (url) => {
   console.log(result);
   return result;
 };
-getTimeNews("https://cryptonews.net/news/security/12830651/");
-// getData(20);
+const getData = async (num: number = 1) => {
+  const url = `https://cryptonews.net/?page=${num}`;
+  const data: string = await getUrl(url);
+  const $ = Cheerio.load(data);
+  const baseUrl: string = `https://cryptonews.net`;
+  let arr: {
+    title: string; // kamroq bo'ladi
+    imageUrl: string; // url bo'ladi
+    description: string; //bu ham url bo'ladi faqat to'liqroq
+    date: number;
+  }[] = [];
+  $(".row.news-item.start-xs").each((_, e) => {
+    let obj = {} as Data;
+    obj.title = String($(e).attr("data-title"));
+    obj.description = String(baseUrl + $(e).attr("data-id"));
+    obj.imageUrl = String($(e).attr("data-image"));
+    arr.push(obj);
+  });
+
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].date = Number(await getTimeNews(arr[i].description));
+  }
+  console.log(arr); // u yerda yangililklar ma'lumotlar yangilandi
+};
+getData(20);
+//
+
+export { getData, getTimeNews };
