@@ -66,9 +66,8 @@ const getData = async (num: number = 1) => {
   for (let i = 0; i < arr.length; i++) {
     arr[i].date = Number(await getTimeNews(arr[i].description));
   }
-  console.log(arr); // u yerda yangililklar ma'lumotlar yangilandi
+  return arr; // u yerda yangililklar ma'lumotlar yangilandi
 };
-getData();
 //
 
-export { getData, getTimeNews };
+export { getData };

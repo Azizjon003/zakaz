@@ -13,7 +13,7 @@ let getData: (url: string) => void = async (url) => {
     operationName: "MainPagePostsQuery",
     variables: {
       offset: 0,
-      length: 10,
+      length: 20,
       short: "en",
       cacheTimeInMS: 1000,
     },
@@ -55,4 +55,5 @@ let getData: (url: string) => void = async (url) => {
   }
   console.log(arr);
 };
-getData("https://graphcdn.cointelegraph.com");
+getData("https://graphcdn.cointelegraph.com/");
+export { getData };
