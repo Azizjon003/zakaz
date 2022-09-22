@@ -19,20 +19,20 @@ const getTimeNews: (url: string) => void = async (url) => {
 
   $(".datetime.flex.middle-xs").each((__, e1) => {
     let time: string = $(e1).text().trim();
-    console.log(time);
+    // console.log(time);
     if (time.includes("h") && time.length <= 4) {
       let hour: number = Number(time.split("h")[0]);
       let date: Date = new Date();
       date.setHours(date.getHours() - hour);
       vaqt = Number(date.getTime());
-      console.log("soat");
+      //  console.log("soat");
     } else {
       if (time.includes("m") && time.length <= 4) {
         let minutes: number = Number(time.split("m")[0]);
         let date: Date = new Date();
         date.setMinutes(date.getMinutes() - minutes);
         vaqt = Number(date.getTime());
-        console.log("minut");
+        //console.log("minut");
       } else {
         const timeD: Date = new Date(String(time.split(",")[0]));
         let date = new Date(timeD);
@@ -41,7 +41,7 @@ const getTimeNews: (url: string) => void = async (url) => {
     }
   });
   let result: number = vaqt;
-  console.log(result);
+  // console.log(result);
   return result;
 };
 const getData = async (num: number = 1) => {
@@ -68,7 +68,7 @@ const getData = async (num: number = 1) => {
   }
   console.log(arr); // u yerda yangililklar ma'lumotlar yangilandi
 };
-getData(20);
+getData();
 //
 
 export { getData, getTimeNews };
