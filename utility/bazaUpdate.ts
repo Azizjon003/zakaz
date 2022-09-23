@@ -113,14 +113,14 @@ const updateOneParser = async (model: any) => {
   }
 };
 const updateThreeParser = async (model: any) => {
-  // const data = await model.findAll({
-  //   where: {
-  //     turi: "3",
-  //   },
-  //   order: [["date", "DESC"]],
-  // });
-  // const test: number = data[0].dataValues.date;
-  const test = new Date().getTime() - 5 * 60 * 60 * 1000;
+  const data = await model.findAll({
+    where: {
+      turi: "3",
+    },
+    order: [["date", "DESC"]],
+  });
+  const test: number = data[0].dataValues.date;
+  // const test = new Date().getTime() - 5 * 60 * 60 * 1000;
   let shart: boolean = true;
   let son: number = 1;
   let mainArr: {
@@ -169,9 +169,9 @@ const updateThreeParser = async (model: any) => {
   }
 };
 
-const ishla = async () => {
-  // updateTwoParser(news);
-  // updateOneParser(news);
+const update = async () => {
+  updateTwoParser(news);
+  updateOneParser(news);
   updateThreeParser(news);
 };
-ishla();
+export { update };

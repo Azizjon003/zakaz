@@ -12,6 +12,7 @@ const user = (sequelize: any, DataTypes: any) => {
     telegram_id: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      unique: true,
     },
     activ: {
       type: DataTypes.BOOLEAN,
