@@ -12,7 +12,7 @@ interface Data {
   date: number;
 }
 const getParser = async () => {
-  const url = `https://cryptonews.com`;
+  const url = `https://cryptonews.com/news`;
   const data: string = await getData(url);
   const $ = Cheerio.load(data);
   let arr: {
@@ -73,7 +73,7 @@ const getParser = async () => {
     obj.date = vaqt;
     arr.push(obj);
   });
-  console.log(arr);
+
   return arr;
 };
 

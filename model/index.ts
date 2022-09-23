@@ -24,12 +24,12 @@ db.sequelize = sequelize;
 db.user = require("./user")(sequelize, DataTypes);
 db.news = require("./news")(sequelize, DataTypes);
 db.channel = require("./channel")(sequelize, DataTypes);
-db.sequelize
-  .sync({ alter: true, force: true })
-  .then(() => {
-    console.log(cli.green("synced"));
-  })
-  .catch((err: any) => {
-    console.log(cli.red(err));
-  });
+// db.sequelize
+//   .sync({ alter: true, force: true })
+//   .then(() => {
+//     console.log(cli.green("synced"));
+//   })
+//   .catch((err: any) => {
+//     console.log(cli.red(err));
+//   });
 module.exports = db;
