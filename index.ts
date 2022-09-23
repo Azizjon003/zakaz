@@ -6,6 +6,7 @@ require("./model");
 const db: any = require("./model/index");
 const User: any = db.user;
 const Channel: any = db.channel;
+const News: any = db.news;
 
 //interfaces for typescript
 interface User {
@@ -46,6 +47,64 @@ bot.command("help", async (ctx: any) => {
   ctx.telegram.sendMessage(id, string, {
     parse_mode: "HTML",
   });
+});
+bot.on("channel_post", async (ctx: any) => {
+  console.log(ctx.update);
+  const text: string = ctx.update.channel_post.text;
+  const id: bigint = ctx.update.channel_post.chat.id;
+  const messageId: bigint = ctx.update.channel_post.message_id;
+  if (text == "news") {
+    const channel = await Channel.findOne({
+      where: {
+        telegram_id: id,
+      },
+    });
+    if (!channel.news_id) {
+      const newsChannel = await News.findAll({
+        order: [["date", "DESC"]],
+      });
+      Channel.update(
+        { news_id: newsChannel[0].id },
+        { where: { telegram_id: id } }
+      );
+
+      for (let i = 0; i < 10; i++) {
+        // const element = array[i];
+        //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
+      }
+    } else {
+      const channelnew = await Channel.findOne({
+        where: { telegram_id: id },
+      });
+      const newsUpdate = await News.findOne({
+        where: { id: channelnew.news_id },
+      });
+      const newsChan = await News.findAll({
+        where: {
+          date: {
+            [db.Op.gt]: newsUpdate.date,
+          },
+        },
+        order: [["date", "DESC"]],
+      });
+      const upt = await Channel.update(
+        {
+          news_id: newsChan[0].dataValues.id,
+        },
+        {
+          where: {
+            telegram_id: id,
+          },
+        }
+      );
+      if (upt) {
+        for (let i = 0; i < newsChan.length; i++) {
+          // const element = array[i];
+          //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
+        }
+      }
+    }
+  }
 });
 bot.hears("music", async (ctx: any) => {
   ctx.reply(

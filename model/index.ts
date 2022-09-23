@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 import cli from "cli-color";
 const sequelize = new Sequelize("news", "postgres", "13112003", {
   host: "localhost",
@@ -21,6 +21,7 @@ sequelize
   });
 let db: any = {} as data;
 db.sequelize = sequelize;
+db.Op = Op;
 db.user = require("./user")(sequelize, DataTypes);
 db.news = require("./news")(sequelize, DataTypes);
 db.channel = require("./channel")(sequelize, DataTypes);
