@@ -21,12 +21,17 @@ const channel = (sequelize: any, DataTypes: any) => {
       },
     },
     userId: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: "users",
         key: "id",
       },
+    },
+    activ: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   });
   return channel;

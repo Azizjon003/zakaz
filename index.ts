@@ -5,9 +5,18 @@ const token: string = String(process.env.TOKEN);
 require("./model");
 const db: any = require("./model/index");
 const User: any = db.user;
+const Channel: any = db.channel;
+
+//interfaces for typescript
 interface User {
   username: string;
   telegram_id: bigint;
+}
+interface Channel {
+  name: string;
+  telegram_id: bigint;
+  news_id?: bigint;
+  userId: number;
 }
 const bot = new Telegraf(token);
 bot.start(async (ctx: any) => {
@@ -32,13 +41,55 @@ bot.start(async (ctx: any) => {
   );
 });
 bot.command("help", async (ctx: any) => {
-  let string = `<i>Assalomu alaykum.Bizning botimizdan foydalanish qo'llanmasi.</i>\n<u>Botni ishga tushurgandan so'ng uni kanalingizga qo'shib qo'yishingiz mumkin.\nKanalingizga yangiliklarni avtomatik qo'shib boradi.Biz yangi funksiyalar ustida ishlayapmiz.\nSiz qachon yangilik tashlanishini rejalashtirishingiz mumkun bo'ladi.</u>\n`;
+  let string = `<span class="tg-spoiler"><i>Assalomu alaykum.Bizning botimizdan foydalanish qo'llanmasi.</i>\n<u>Botni ishga tushurgandan so'ng uni kanalingizga qo'shib qo'yishingiz mumkin.\nKanalingizga yangiliklarni avtomatik qo'shib boradi.Biz yangi funksiyalar ustida ishlayapmiz.\nSiz qachon yangilik tashlanishini rejalashtirishingiz mumkun bo'ladi.</u></span>\n`;
   const id = ctx.update.message.from.id;
   ctx.telegram.sendMessage(id, string, {
     parse_mode: "HTML",
   });
 });
-bot.hears("salom", async (ctx: any) => {
-  ctx.reply("salom bacha keldingmi");
+bot.hears("music", async (ctx: any) => {
+  ctx.reply(
+    "Bu yerda musiqa yo'q necha marta aytay musiqa yo'q deb yangiliklar bor"
+  );
+});
+bot.on("my_chat_member", async (ctx: any) => {
+  const id: bigint = ctx.update.my_chat_member.chat.id;
+  const name: string = ctx.update.my_chat_member.chat.username;
+  const userid: bigint = ctx.update.my_chat_member.from.id;
+  console.log(userid);
+  const test = ctx.update.my_chat_member.new_chat_member.status;
+  let objUser;
+  objUser = await User.findOne({
+    where: {
+      telegram_id: userid,
+    },
+  });
+
+  if (!objUser) {
+    const user: object = { username: name, telegram_id: userid } as User;
+    objUser = await User.create(user);
+  }
+  const findChannel = await Channel.findOne({
+    where: {
+      telegram_id: id,
+    },
+  });
+  if (!findChannel) {
+    const channel: object = {
+      telegram_id: id,
+      name: name,
+      userId: Number(objUser.id),
+    } as Channel;
+    const obj = await Channel.create(channel);
+  }
+  if (test === "kicked" && objUser) {
+    ctx.telegram.sendMessage(
+      userid,
+      `@${name} kanalingizdan chopildim tashlandim`
+    );
+  }
+  if (test == "administrator" && objUser) {
+    ctx.telegram.sendMessage(userid, `@${name} kanalingizga qo'shildim `);
+  }
 });
 bot.launch();
