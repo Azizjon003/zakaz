@@ -8,17 +8,12 @@ const news = (sequelize: any, DataTypes: any) => {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        min: 5,
-        max: 20,
-      },
+      validate: {},
     },
     imageUrl: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        min: 5,
-        max: 100,
         isUrl: true,
       },
     },
@@ -26,8 +21,6 @@ const news = (sequelize: any, DataTypes: any) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        min: 5,
-        max: 100,
         isUrl: true,
       },
     },

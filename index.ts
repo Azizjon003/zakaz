@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf";
 import dotenv from "dotenv";
 dotenv.config({ path: "./config.env" });
+import { SendMessage } from "./utility/sendNews";
 const token: string = String(process.env.TOKEN);
 require("./model");
 const db: any = require("./model/index");
@@ -63,13 +64,21 @@ bot.on("channel_post", async (ctx: any) => {
       const newsChannel = await News.findAll({
         order: [["date", "DESC"]],
       });
+      console.log(newsChannel);
       Channel.update(
-        { news_id: newsChannel[0].id },
+        { news_id: newsChannel[0].dataValues.id },
         { where: { telegram_id: id } }
       );
 
       for (let i = 0; i < 10; i++) {
         // const element = array[i];
+        SendMessage(
+          ctx,
+          id,
+          newsChannel[i].dataValues.imageUrl,
+          newsChannel[i].dataValues.title,
+          newsChannel[i].dataValues.description
+        );
         //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
       }
     } else {
