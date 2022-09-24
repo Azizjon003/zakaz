@@ -7,6 +7,7 @@ interface Data {
   imageUrl: string; // url bo'ladi
   description: string; //bu ham url bo'ladi faqat to'liqroq
   date: number; //bu qachon maqola chiqarilganligi haqida
+  titleStr: string; // qisqacha description
 }
 let getData = async (url: string, num: number) => {
   let mainUrl = "https://cointelegraph.com/news/";
@@ -46,6 +47,7 @@ let getData = async (url: string, num: number) => {
     description: string;
     date: number;
     imageUrl: string;
+    titleStr: string;
   }[] = [];
   for (let i = 0; i < parser.length; i++) {
     let obj = {} as Data;
@@ -53,6 +55,7 @@ let getData = async (url: string, num: number) => {
     obj.description = mainUrl + parser[i].slug;
     obj.date = new Date(parser[i].postTranslate.published).getTime();
     obj.imageUrl = parser[i].postTranslate.avatar;
+    obj.titleStr = parser[i].postTranslate.leadText;
     arr.push(obj);
   }
   console.log(arr);
@@ -62,5 +65,4 @@ const getParserThree = async (num: number) => {
   let datt = await getData("https://graphcdn.cointelegraph.com/", num);
   return datt;
 };
-
 export { getParserThree };

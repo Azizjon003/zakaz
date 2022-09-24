@@ -77,7 +77,8 @@ bot.on("channel_post", async (ctx: any) => {
           id,
           newsChannel[i].dataValues.imageUrl,
           newsChannel[i].dataValues.title,
-          newsChannel[i].dataValues.description
+          newsChannel[i].dataValues.description,
+          newsChannel[i].dataValues.titleStr
         );
         //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
       }
@@ -85,9 +86,11 @@ bot.on("channel_post", async (ctx: any) => {
       const channelnew = await Channel.findOne({
         where: { telegram_id: id },
       });
+      console.log(channelnew);
       const newsUpdate = await News.findOne({
-        where: { id: channelnew.news_id },
+        where: { id: channelnew.dataValues.news_id },
       });
+      console.log(newsUpdate);
       const newsChan = await News.findAll({
         where: {
           date: {
@@ -96,20 +99,28 @@ bot.on("channel_post", async (ctx: any) => {
         },
         order: [["date", "DESC"]],
       });
-      const upt = await Channel.update(
-        {
-          news_id: newsChan[0].dataValues.id,
-        },
-        {
-          where: {
-            telegram_id: id,
+      if (newsChan) {
+        const upt = await Channel.update(
+          {
+            news_id: newsChan[0].dataValues.id,
           },
-        }
-      );
-      if (upt) {
-        for (let i = 0; i < newsChan.length; i++) {
-          // const element = array[i];
-          //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
+          {
+            where: {
+              telegram_id: id,
+            },
+          }
+        );
+        if (upt) {
+          for (let i = 0; i < newsChan.length; i++) {
+            await SendMessage(
+              ctx,
+              id,
+              newsChan[i].dataValues.imageUrl,
+              newsChan[i].dataValues.title,
+              newsChan[i].dataValues.description,
+              newsChan[i].dataValues.titleStr
+            );
+          }
         }
       }
     }

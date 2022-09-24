@@ -13,7 +13,7 @@ const updateTwoParser = async (model: any) => {
   //     order: [["date", "DESC"]],
   //   });
   //   let test: number = data[0].dataValues.date;
-  const test: number = new Date().getTime() - 5 * 60 * 60 * 1000;
+  const test: number = new Date().getTime() - 24 * 60 * 60 * 1000;
   let shart: boolean = true;
   let son: number = 1;
   let mainArr: {
@@ -30,6 +30,7 @@ const updateTwoParser = async (model: any) => {
       description: string;
       date: number;
     }[] = await getData(son);
+    console.log(arr);
     console.log(cli.blue("sihaladabas"));
     let arr2: {
       title: string;
@@ -66,7 +67,7 @@ const updateOneParser = async (model: any) => {
   //   });
   //   const test: number = data[0].dataValues.date;
   // const test: number = new Date().getTime() - 24 * 60 * 60 * 1000;
-  const test: number = new Date().getTime() - 5 * 60 * 60 * 1000;
+  const test: number = new Date().getTime() - 10 * 60 * 60 * 1000;
   let shart: boolean = true;
   let son: number = 1;
   let mainArr: {
@@ -179,4 +180,3 @@ const update = async () => {
   await updateThreeParser(news);
 };
 update();
-export { update };

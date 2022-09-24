@@ -3,10 +3,19 @@ const SendMessage = async (
   id: bigint,
   url: string,
   title: string,
-  description: string
+  description: string,
+  titleStr: string
 ) => {
-  let str = title + "\n" + `<a  href = '${description}'> Link </a>`;
-  ctx.telegram.sendPhoto(id, url, {
+  let str =
+    "<b>" +
+    title +
+    "</b>" +
+    "<i>" +
+    titleStr +
+    "</i>" +
+    "\n" +
+    `<a  href = '${description}'>Read more...</a>`;
+  await ctx.telegram.sendPhoto(id, url, {
     caption: str,
     parse_mode: "HTML",
   });

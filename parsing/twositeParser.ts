@@ -10,6 +10,7 @@ interface Data {
   imageUrl: string; // url bo'ladi
   description: string; //bu ham url bo'ladi faqat to'liqroq
   date: number; //bu qachon maqola chiqarilganligi haqida
+  titleStr: string; // qisqacha ma'lumot haqida
 }
 
 const getTimeNews: (url: string) => void = async (url) => {
@@ -44,6 +45,24 @@ const getTimeNews: (url: string) => void = async (url) => {
   // console.log(result);
   return result;
 };
+const getTitleStr: (url: string) => void = async (url) => {
+  const data = await getUrl(url);
+  const $ = Cheerio.load(data);
+  let titleStr = $(".news-item.detail.content_text")
+    .children("p")
+    .first()
+    .text()
+    .trim();
+  if (!titleStr) {
+    titleStr = $(".news-item.detail.content_text")
+      .find("p")
+      .first()
+      .text()
+      .trim();
+  }
+  return titleStr;
+};
+
 const getData = async (num: number = 1) => {
   const url = `https://cryptonews.net/?page=${num}`;
   const data: string = await getUrl(url);
@@ -53,7 +72,8 @@ const getData = async (num: number = 1) => {
     title: string; // kamroq bo'ladi
     imageUrl: string; // url bo'ladi
     description: string; //bu ham url bo'ladi faqat to'liqroq
-    date: number;
+    date: number; // number
+    titleStr: string;
   }[] = [];
   $(".row.news-item.start-xs").each((_, e) => {
     let obj = {} as Data;
@@ -65,7 +85,9 @@ const getData = async (num: number = 1) => {
 
   for (let i = 0; i < arr.length; i++) {
     arr[i].date = Number(await getTimeNews(arr[i].description));
+    arr[i].titleStr = String(await getTitleStr(arr[i].description));
   }
+  console.log(arr);
   return arr; // u yerda yangililklar ma'lumotlar yangilandi
 };
 //
