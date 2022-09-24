@@ -1,14 +1,21 @@
 import { Telegraf } from "telegraf";
+
 import dotenv from "dotenv";
+import { update } from "./utility/bazaUpdate";
+const crone = require("node-cron");
 dotenv.config({ path: "./config.env" });
+
 import { SendMessage } from "./utility/sendNews";
 const token: string = String(process.env.TOKEN);
+
+import cli from "cli-color";
 require("./model");
+// typescript database
 const db: any = require("./model/index");
 const User: any = db.user;
 const Channel: any = db.channel;
 const News: any = db.news;
-
+//typescript database
 //interfaces for typescript
 interface User {
   username: string;
@@ -49,6 +56,70 @@ bot.command("help", async (ctx: any) => {
     parse_mode: "HTML",
   });
 });
+crone.schedule("0 20 * * *", async () => {
+  const channelsAll: any = await Channel.findAll();
+  for (let i = 0; i < channelsAll.length; i++) {
+    const chan = channelsAll[i].dataValues.news_id;
+    if (!chan) {
+      const newsChannel = await News.findAll({
+        order: [["date", "DESC"]],
+      });
+      Channel.update(
+        { news_id: newsChannel[0].dataValues.id },
+        { where: { telegram_id: channelsAll[i].dataValues.telegram_id } }
+      );
+
+      for (let j = 0; j < 10; j++) {
+        // const element = array[i];
+        SendMessage(
+          bot,
+          channelsAll[i].dataValues.telegram_id,
+          newsChannel[j].dataValues.imageUrl,
+          newsChannel[j].dataValues.title,
+          newsChannel[j].dataValues.description,
+          newsChannel[j].dataValues.titleStr
+        );
+        //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
+      }
+    } else {
+      const news = await News.findOne({
+        where: {
+          id: chan,
+        },
+      });
+      const newsNew = await News.findAll({
+        where: {
+          data: {
+            [db.Sequelize.Op.gt]: news.dataValues.date,
+          },
+        },
+        order: [["date", "ASC"]],
+      });
+      if (newsNew.length > 0) {
+        Channel.update(
+          { news_id: newsNew[0].dataValues.id },
+          { where: { telegram_id: channelsAll[i].dataValues.telegram_id } }
+        );
+        for (let k = 0; k <= 1; k++) {
+          // const element = array[i];
+          SendMessage(
+            bot,
+            channelsAll[i].dataValues.telegram_id,
+            newsNew[k].dataValues.imageUrl,
+            newsNew[k].dataValues.title,
+            newsNew[k].dataValues.description,
+            newsNew[k].dataValues.titleStr
+          );
+          //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
+        }
+      }
+    }
+  }
+});
+crone.schedule("0 30 * * * *", async () => {
+  console.log(cli.red("update qilyapti"));
+  update();
+});
 bot.on("channel_post", async (ctx: any) => {
   console.log(ctx.update);
   const text: string = ctx.update.channel_post.text;
@@ -86,20 +157,21 @@ bot.on("channel_post", async (ctx: any) => {
       const channelnew = await Channel.findOne({
         where: { telegram_id: id },
       });
-      console.log(channelnew);
       const newsUpdate = await News.findOne({
         where: { id: channelnew.dataValues.news_id },
       });
-      console.log(newsUpdate);
+
       const newsChan = await News.findAll({
         where: {
           date: {
-            [db.Op.gt]: newsUpdate.date,
+            [db.Op.gte]: newsUpdate.date,
           },
         },
         order: [["date", "DESC"]],
       });
-      if (newsChan) {
+
+      if (newsChan.length > 0) {
+        console.log(cli.red("sfvibasfboausfbasuofbasufobasos"));
         const upt = await Channel.update(
           {
             news_id: newsChan[0].dataValues.id,
@@ -121,7 +193,14 @@ bot.on("channel_post", async (ctx: any) => {
               newsChan[i].dataValues.titleStr
             );
           }
+        } else {
+          ctx.telegram.SendMessage(id, "Yangiliklar yoq");
         }
+      } else {
+        console.log(cli.red("nimadurlare"));
+        ctx.telegram.sendMessage(id, "Yangiliklar yoq", {
+          replay_to_message_id: messageId,
+        });
       }
     }
   }
@@ -171,4 +250,5 @@ bot.on("my_chat_member", async (ctx: any) => {
     ctx.telegram.sendMessage(userid, `@${name} kanalingizga qo'shildim `);
   }
 });
+bot.catch((err: any, ctx: any) => {});
 bot.launch();
