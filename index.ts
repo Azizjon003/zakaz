@@ -56,10 +56,12 @@ bot.command("help", async (ctx: any) => {
     parse_mode: "HTML",
   });
 });
-crone.schedule("0 20 * * *", async () => {
+crone.schedule("0 10 * * * *", async () => {
   const channelsAll: any = await Channel.findAll();
   for (let i = 0; i < channelsAll.length; i++) {
-    const chan = channelsAll[i].dataValues.news_id;
+    const chan = await channelsAll[i].dataValues.news_id;
+    console.log(chan);
+    console.log("hay hay");
     if (!chan) {
       const newsChannel = await News.findAll({
         order: [["date", "DESC"]],
@@ -87,20 +89,23 @@ crone.schedule("0 20 * * *", async () => {
           id: chan,
         },
       });
+
       const newsNew = await News.findAll({
         where: {
-          data: {
-            [db.Sequelize.Op.gt]: news.dataValues.date,
+          date: {
+            [db.Op.gt]: news.dataValues.date,
           },
         },
         order: [["date", "ASC"]],
       });
+      console.log(newsNew);
+      console.log("ishla jjj");
       if (newsNew.length > 0) {
         Channel.update(
           { news_id: newsNew[0].dataValues.id },
           { where: { telegram_id: channelsAll[i].dataValues.telegram_id } }
         );
-        for (let k = 0; k <= 1; k++) {
+        for (let k = 0; k < 1; k++) {
           // const element = array[i];
           SendMessage(
             bot,
