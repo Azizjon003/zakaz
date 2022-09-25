@@ -2,7 +2,11 @@ import axios from "axios";
 import Cheerio from "cheerio";
 import { title } from "process";
 const getUrl = async (url: string) => {
-  let data: { data: string } = await axios.get(url);
+  let data: { data: string; headers: any } = await axios.get(url, {
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+  });
+  console.log(data.headers);
   return data.data;
 };
 interface Data {
@@ -13,36 +17,33 @@ interface Data {
   titleStr: string; // qisqacha ma'lumot haqida
 }
 
-const getTimeNews: (url: string) => void = async (url) => {
-  const data: string = await getUrl(url);
+const getTimeNews = (date: string) => {
   let vaqt: number = 111111111111;
-  const $ = Cheerio.load(data);
 
-  $(".datetime.flex.middle-xs").each((__, e1) => {
-    let time: string = $(e1).text().trim();
-    // console.log(time);
-    if (time.includes("h") && time.length <= 4) {
-      let hour: number = Number(time.split("h")[0]);
+  let time: string = date;
+  // console.log(time);
+  if (time.includes("h") && time.length <= 4) {
+    let hour: number = Number(time.split("h")[0]);
+    let date: Date = new Date();
+    date.setHours(date.getHours() - hour);
+    vaqt = Number(date.getTime());
+    //  console.log("soat");
+  } else {
+    if (time.includes("m") && time.length <= 4) {
+      let minutes: number = Number(time.split("m")[0]);
       let date: Date = new Date();
-      date.setHours(date.getHours() - hour);
+      date.setMinutes(date.getMinutes() - minutes);
       vaqt = Number(date.getTime());
-      //  console.log("soat");
+      //console.log("minut");
     } else {
-      if (time.includes("m") && time.length <= 4) {
-        let minutes: number = Number(time.split("m")[0]);
-        let date: Date = new Date();
-        date.setMinutes(date.getMinutes() - minutes);
-        vaqt = Number(date.getTime());
-        //console.log("minut");
-      } else {
-        const timeD: Date = new Date(String(time.split(",")[0]));
-        let date = new Date(timeD);
-        vaqt = Number(date.getTime());
-      }
+      const timeD: Date = new Date(String(time.split(",")[0]));
+      let date = new Date(timeD);
+      vaqt = Number(date.getTime());
     }
-  });
+  }
+
   let result: number = vaqt;
-  // console.log(result);
+  console.log(result);
   return result;
 };
 const getTitleStr: (url: string) => void = async (url) => {
@@ -79,17 +80,25 @@ const getData = async (num: number = 1) => {
     let obj = {} as Data;
     obj.title = String($(e).attr("data-title"));
     obj.description = String(baseUrl + $(e).attr("data-id"));
+    const dateStr = $(e)
+      .find(".row.middle-xs")
+      .children("span")
+      .last()
+      .text()
+      .trim();
+    console.log(dateStr);
+    obj.date = Number(getTimeNews(dateStr));
     obj.imageUrl = String($(e).attr("data-image"));
     arr.push(obj);
   });
 
   for (let i = 0; i < arr.length; i++) {
-    arr[i].date = Number(await getTimeNews(arr[i].description));
     arr[i].titleStr = String(await getTitleStr(arr[i].description));
   }
   console.log(arr);
   return arr; // u yerda yangililklar ma'lumotlar yangilandi
 };
 //
-
+// getUrl("https://cryptonews.net/?page=2");
+// getTimeNews("1h");
 export { getData };

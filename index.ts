@@ -45,12 +45,12 @@ bot.start(async (ctx: any) => {
   }
   ctx.telegram.sendMessage(
     id,
-    `Salom bizning botimizga xush kelibsiz <a href = 't.me/${name}'> ${nameA}</a>`,
+    `Hello, welcome to our bot <a href = 't.me/${name}'> ${nameA}</a>.Bot user manual /help`,
     { parse_mode: "HTML" }
   );
 });
 bot.command("help", async (ctx: any) => {
-  let string = `<span class="tg-spoiler"><i>Assalomu alaykum.Bizning botimizdan foydalanish qo'llanmasi.</i>\n<u>Botni ishga tushurgandan so'ng uni kanalingizga qo'shib qo'yishingiz mumkin.\nKanalingizga yangiliklarni avtomatik qo'shib boradi.Biz yangi funksiyalar ustida ishlayapmiz.\nSiz qachon yangilik tashlanishini rejalashtirishingiz mumkun bo'ladi.</u></span>\n`;
+  let string = `<span class="tg-spoiler"><i>Hello. How to use our bot.</i>\n<u>After launching the bot, you can add it to your channel.\nAutomatically adds news to your channel. We are working on new features.\nYou can schedule when updates are released.</u></span>\n`;
   const id = ctx.update.message.from.id;
   ctx.telegram.sendMessage(id, string, {
     parse_mode: "HTML",
@@ -176,7 +176,6 @@ bot.on("channel_post", async (ctx: any) => {
       });
 
       if (newsChan.length > 0) {
-        console.log(cli.red("sfvibasfboausfbasuofbasufobasos"));
         const upt = await Channel.update(
           {
             news_id: newsChan[0].dataValues.id,
@@ -212,7 +211,7 @@ bot.on("channel_post", async (ctx: any) => {
 });
 bot.hears("music", async (ctx: any) => {
   ctx.reply(
-    "Bu yerda musiqa yo'q necha marta aytay musiqa yo'q deb yangiliklar bor"
+    "There is no music here. How many times do I have to say there are news that there is no music"
   );
 });
 bot.on("my_chat_member", async (ctx: any) => {
@@ -248,11 +247,11 @@ bot.on("my_chat_member", async (ctx: any) => {
   if (test === "kicked" && objUser) {
     ctx.telegram.sendMessage(
       userid,
-      `@${name} kanalingizdan chopildim tashlandim`
+      ` I got kicked out of your @${name} channel`
     );
   }
   if (test == "administrator" && objUser) {
-    ctx.telegram.sendMessage(userid, `@${name} kanalingizga qo'shildim `);
+    ctx.telegram.sendMessage(userid, `I joined your channel @${name}`);
   }
 });
 bot.catch((err: any, ctx: any) => {});

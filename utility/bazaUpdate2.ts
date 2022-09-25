@@ -29,7 +29,7 @@ const updateTwoParser = async (model: any) => {
       imageUrl: string;
       description: string;
       date: number;
-    }[] = await getData(son);
+    }[] = await getData(1);
     console.log(arr);
     console.log(cli.blue("sihaladabas"));
     let arr2: {
@@ -67,7 +67,7 @@ const updateOneParser = async (model: any) => {
   //   });
   //   const test: number = data[0].dataValues.date;
   // const test: number = new Date().getTime() - 24 * 60 * 60 * 1000;
-  const test: number = new Date().getTime() - 10 * 60 * 60 * 1000;
+  const test: number = new Date().getTime() - 5 * 60 * 60 * 1000;
   let shart: boolean = true;
   let son: number = 1;
   let mainArr: {
@@ -175,8 +175,8 @@ const updateThreeParser = async (model: any) => {
 };
 
 const update = async () => {
-  await updateOneParser(news);
+  // await updateOneParser(news);
   await updateTwoParser(news);
-  await updateThreeParser(news);
+  // await updateThreeParser(news);
 };
 update();
