@@ -11,17 +11,26 @@ interface Data {
 }
 let getData = async (url: string, num: number) => {
   let mainUrl = "https://cointelegraph.com/news/";
-  const data = await axios.post(url, {
-    operationName: "MainPagePostsQuery",
-    variables: {
-      offset: (num - 1) * 15,
-      length: num * 15,
-      short: "en",
-      cacheTimeInMS: 1000,
+  const data = await axios.post(
+    url,
+    {
+      operationName: "MainPagePostsQuery",
+      variables: {
+        offset: (num - 1) * 15,
+        length: num * 15,
+        short: "en",
+        cacheTimeInMS: 1000,
+      },
+      query:
+        'query MainPagePostsQuery($short: String, $offset: Int!, $length: Int!, $place: String = "index") {\n  locale(short: $short) {\n    posts(\n      order: "postPublishedTime"\n      offset: $offset\n      length: $length\n      place: $place\n    ) {\n      data {\n        cacheKey\n        id\n        slug\n        postTranslate {\n          cacheKey\n          id\n          title\n          avatar\n          published\n          publishedHumanFormat\n          leadText\n          author {\n            cacheKey\n            id\n            slug\n            authorTranslates {\n              cacheKey\n              id\n              name\n            }\n          }\n        }\n        category {\n          cacheKey\n          id\n          slug\n          categoryTranslates {\n            cacheKey\n            id\n            title\n          }\n        }\n        author {\n          cacheKey\n          id\n          slug\n          authorTranslates {\n            cacheKey\n            id\n            name\n          }\n        }\n        postBadge {\n          cacheKey\n          id\n          label\n          postBadgeTranslates {\n            cacheKey\n            id\n            title\n          }\n        }\n      }\n      postsCount\n      hasMorePosts\n    }\n  }\n}\n',
     },
-    query:
-      'query MainPagePostsQuery($short: String, $offset: Int!, $length: Int!, $place: String = "index") {\n  locale(short: $short) {\n    posts(\n      order: "postPublishedTime"\n      offset: $offset\n      length: $length\n      place: $place\n    ) {\n      data {\n        cacheKey\n        id\n        slug\n        postTranslate {\n          cacheKey\n          id\n          title\n          avatar\n          published\n          publishedHumanFormat\n          leadText\n          author {\n            cacheKey\n            id\n            slug\n            authorTranslates {\n              cacheKey\n              id\n              name\n            }\n          }\n        }\n        category {\n          cacheKey\n          id\n          slug\n          categoryTranslates {\n            cacheKey\n            id\n            title\n          }\n        }\n        author {\n          cacheKey\n          id\n          slug\n          authorTranslates {\n            cacheKey\n            id\n            name\n          }\n        }\n        postBadge {\n          cacheKey\n          id\n          label\n          postBadgeTranslates {\n            cacheKey\n            id\n            title\n          }\n        }\n      }\n      postsCount\n      hasMorePosts\n    }\n  }\n}\n',
-  });
+    {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1",
+      },
+    }
+  );
   console.log(data.data);
 
   const malumot: {

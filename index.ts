@@ -2,12 +2,43 @@ import { Telegraf } from "telegraf";
 
 import dotenv from "dotenv";
 import { update } from "./utility/bazaUpdate";
+import axios from "axios";
+import Cheerio from "cheerio";
 const crone = require("node-cron");
 dotenv.config({ path: "./config.env" });
 
 import { SendMessage } from "./utility/sendNews";
 const token: string = String(process.env.TOKEN);
 
+//
+const getUrl = async (url: string) => {
+  let data: { data: string; headers: any } = await axios.get(url, {
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+  });
+  console.log(data.headers);
+  return data.data;
+};
+//
+// functons await for update
+const getTitleStr: (url: string) => void = async (url) => {
+  const data = await getUrl(url);
+  const $ = Cheerio.load(data);
+  let titleStr = $(".news-item.detail.content_text")
+    .children("p")
+    .first()
+    .text()
+    .trim();
+  if (!titleStr) {
+    titleStr = $(".news-item.detail.content_text")
+      .find("p")
+      .first()
+      .text()
+      .trim();
+  }
+  return titleStr;
+};
+//functions await for update with
 import cli from "cli-color";
 require("./model");
 // typescript database
@@ -73,14 +104,28 @@ crone.schedule("0 10 * * * *", async () => {
 
       for (let j = 0; j < 10; j++) {
         // const element = array[i];
-        SendMessage(
-          bot,
-          channelsAll[i].dataValues.telegram_id,
-          newsChannel[j].dataValues.imageUrl,
-          newsChannel[j].dataValues.title,
-          newsChannel[j].dataValues.description,
-          newsChannel[j].dataValues.titleStr
-        );
+        if (newsChannel[j].dataValues.turi == "2") {
+          const titleString: string = String(
+            await getTitleStr(newsChannel[j].dataValues.description)
+          );
+          SendMessage(
+            bot,
+            channelsAll[i].dataValues.telegram_id,
+            newsChannel[j].dataValues.imageUrl,
+            newsChannel[j].dataValues.title,
+            newsChannel[j].dataValues.description,
+            titleString
+          );
+        } else {
+          SendMessage(
+            bot,
+            channelsAll[i].dataValues.telegram_id,
+            newsChannel[j].dataValues.imageUrl,
+            newsChannel[j].dataValues.title,
+            newsChannel[j].dataValues.description,
+            newsChannel[j].dataValues.titleStr
+          );
+        }
         //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
       }
     } else {
@@ -106,15 +151,28 @@ crone.schedule("0 10 * * * *", async () => {
           { where: { telegram_id: channelsAll[i].dataValues.telegram_id } }
         );
         for (let k = 0; k < 1; k++) {
-          // const element = array[i];
-          SendMessage(
-            bot,
-            channelsAll[i].dataValues.telegram_id,
-            newsNew[k].dataValues.imageUrl,
-            newsNew[k].dataValues.title,
-            newsNew[k].dataValues.description,
-            newsNew[k].dataValues.titleStr
-          );
+          if (newsNew[k].dataValues.turi == "2") {
+            const titleString: string = String(
+              await getTitleStr(newsNew[k].dataValues.description)
+            );
+            SendMessage(
+              bot,
+              channelsAll[i].dataValues.telegram_id,
+              newsNew[k].dataValues.imageUrl,
+              newsNew[k].dataValues.title,
+              newsNew[k].dataValues.description,
+              titleString
+            );
+          } else {
+            SendMessage(
+              bot,
+              channelsAll[i].dataValues.telegram_id,
+              newsNew[k].dataValues.imageUrl,
+              newsNew[k].dataValues.title,
+              newsNew[k].dataValues.description,
+              newsNew[k].dataValues.titleStr
+            );
+          }
           //bu yerda funksiya bo'ladi va u kerakli yangilikni jo'natadi
         }
       }
@@ -254,5 +312,8 @@ bot.on("my_chat_member", async (ctx: any) => {
     ctx.telegram.sendMessage(userid, `I joined your channel @${name}`);
   }
 });
-bot.catch((err: any, ctx: any) => {});
+bot.catch((err: any, ctx: any) => {
+  const admin: number = Number(process.env.mainAdmin);
+  ctx.telegram.sendMessage(admin, err.message);
+});
 bot.launch();

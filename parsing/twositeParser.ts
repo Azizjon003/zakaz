@@ -2,11 +2,11 @@ import axios from "axios";
 import Cheerio from "cheerio";
 import { title } from "process";
 const getUrl = async (url: string) => {
-  let data: { data: string; headers: any } = await axios.get(url, {
+  let data: { data: string } = await axios.get(url, {
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
   });
-  console.log(data.headers);
+  console.log(data.data);
   return data.data;
 };
 interface Data {
@@ -93,7 +93,7 @@ const getData = async (num: number = 1) => {
   });
 
   for (let i = 0; i < arr.length; i++) {
-    arr[i].titleStr = String(await getTitleStr(arr[i].description));
+    arr[i].titleStr = arr[i].title;
   }
   console.log(arr);
   return arr; // u yerda yangililklar ma'lumotlar yangilandi

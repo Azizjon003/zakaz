@@ -170,7 +170,7 @@ const updateThreeParser = async (model: any) => {
 };
 
 const update = async () => {
-  // await updateTwoParser(news);
+  await updateTwoParser(news);
   await updateOneParser(news);
   await updateThreeParser(news);
 };
