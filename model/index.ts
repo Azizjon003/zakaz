@@ -1,9 +1,16 @@
 const { Sequelize, DataTypes, Op } = require("sequelize");
+import dotenv from "dotenv";
+dotenv.config({ path: "./config.env" });
 import cli from "cli-color";
-const sequelize = new Sequelize("news", "postgres", "13112003", {
-  host: "localhost",
-  dialect: "postgres",
-});
+const sequelize = new Sequelize(
+  "news",
+  "postgres",
+  String(process.env.Password),
+  {
+    host: "localhost",
+    dialect: "postgres",
+  }
+);
 interface data {
   sequelize: any;
   user: any;
